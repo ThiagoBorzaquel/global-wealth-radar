@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /premium/
+Disallow: /auth/
+
+Sitemap: https://globalwealthradar.com/sitemap-index.xml

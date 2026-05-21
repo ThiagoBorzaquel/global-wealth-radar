@@ -1,0 +1,31 @@
+name: 🔔 Check Watchlist Alerts
+
+on:
+  schedule:
+    - cron: '0 13-22 * * 1-5'   # Every hour 9am–6pm EST on trading days
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Check Alerts
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Trigger check-alerts Edge Function
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            "${{ secrets.PUBLIC_SUPABASE_URL }}/functions/v1/check-alerts" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Content-Type: application/json")
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | head -n-1)
+
+          echo "Status: $HTTP_CODE"
+          echo "Response: $BODY"
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "❌ Alert check failed with status $HTTP_CODE"
+            exit 1
+          fi

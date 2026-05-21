@@ -1,0 +1,69 @@
+---
+const year = new Date().getFullYear();
+---
+<footer class="bg-surface-800 border-t border-slate-800 mt-auto">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+
+      <div class="col-span-2 md:col-span-1">
+        <a href="/" class="flex items-center gap-2 mb-4">
+          <span class="text-brand-500 text-2xl">◎</span>
+          <span class="font-display font-bold text-white">Global Wealth Radar</span>
+        </a>
+        <p class="text-slate-500 text-sm leading-relaxed">
+          Investment intelligence for globally-minded investors.
+          Track ETFs, monitor risk, protect your wealth.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="text-white font-semibold text-sm mb-4">Product</h3>
+        <ul class="space-y-2.5">
+          {[
+            ['/dashboard', 'Free Dashboard'],
+            ['/pricing',   'Pricing'],
+            ['/premium',   'Premium'],
+            ['/blog',      'Research Blog'],
+          ].map(([href, label]) => (
+            <li><a href={href} class="text-slate-400 hover:text-white text-sm transition-colors">{label}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-white font-semibold text-sm mb-4">Tools</h3>
+        <ul class="space-y-2.5">
+          {[
+            ['/premium/etf-tracker',    'ETF Tracker'],
+            ['/premium/watchlist',      'Watchlist'],
+            ['/premium/sovereign-risk', 'Sovereign Risk'],
+          ].map(([href, label]) => (
+            <li><a href={href} class="text-slate-400 hover:text-white text-sm transition-colors">{label}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-white font-semibold text-sm mb-4">Legal</h3>
+        <ul class="space-y-2.5">
+          {[
+            ['/privacy',    'Privacy Policy'],
+            ['/terms',      'Terms of Use'],
+            ['/disclaimer', 'Disclaimer'],
+          ].map(([href, label]) => (
+            <li><a href={href} class="text-slate-400 hover:text-white text-sm transition-colors">{label}</a></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t border-slate-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-slate-600 text-xs">
+        © {year} Global Wealth Radar. All rights reserved. Built with Astro + Supabase + Stripe.
+      </p>
+      <p class="text-slate-700 text-xs">
+        ⚠️ Not financial advice. Data for informational purposes only.
+      </p>
+    </div>
+  </div>
+</footer>

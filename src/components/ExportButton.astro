@@ -1,0 +1,67 @@
+---
+interface Props {
+  type: 'etf' | 'watchlist' | 'history';
+  ticker?: string;
+  label?: string;
+}
+const { type, ticker, label = 'Export CSV' } = Astro.props;
+---
+
+<button
+  class="export-csv-btn flex items-center gap-2 border border-slate-700 hover:border-slate-500
+         text-slate-400 hover:text-white text-sm px-4 py-2 rounded-xl transition-colors"
+  data-type={type}
+  data-ticker={ticker}
+>
+  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+  </svg>
+  <span class="export-label">{label}</span>
+</button>
+
+<script>
+  import { supabase } from '../lib/supabase.ts';
+
+  document.querySelectorAll('.export-csv-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const type   = (btn as HTMLElement).dataset.type;
+      const ticker = (btn as HTMLElement).dataset.ticker;
+      const label  = btn.querySelector('.export-label') as HTMLElement;
+      const orig   = label.textContent;
+
+      label.textContent = 'Exporting...';
+      (btn as HTMLButtonElement).disabled = true;
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) throw new Error('Not authenticated');
+
+        const params = new URLSearchParams({ type: type! });
+        if (ticker) params.set('ticker', ticker);
+
+        const res = await fetch(
+          `${import.meta.env.PUBLIC_SUPABASE_URL}/functions/v1/export-csv?${params}`,
+          { headers: { 'Authorization': `Bearer ${session.access_token}` } }
+        );
+
+        if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Export failed'); }
+
+        const blob = await res.blob();
+        const url  = URL.createObjectURL(blob);
+        const cd   = res.headers.get('Content-Disposition') || '';
+        const fn   = cd.match(/filename="(.+)"/)?.[1] || `gwr-${type}.csv`;
+        const a    = document.createElement('a');
+        a.href = url; a.download = fn; a.click();
+        URL.revokeObjectURL(url);
+
+        label.textContent = '✓ Downloaded';
+        setTimeout(() => { label.textContent = orig; (btn as HTMLButtonElement).disabled = false; }, 2000);
+      } catch (err: any) {
+        label.textContent = '✗ Error';
+        console.error(err.message);
+        setTimeout(() => { label.textContent = orig; (btn as HTMLButtonElement).disabled = false; }, 2000);
+      }
+    });
+  });
+</script>

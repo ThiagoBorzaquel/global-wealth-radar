@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Signing in..." description="" noindex={true}>
+  <div class="min-h-screen bg-surface-900 flex items-center justify-center">
+    <div class="text-center">
+      <div class="w-10 h-10 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+      <span class="text-brand-500 text-4xl block mb-3">◎</span>
+      <p class="text-slate-400">Completing sign in...</p>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import { supabase } from '../../lib/supabase.ts';
+
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      const next = new URLSearchParams(window.location.search).get('next') || '/dashboard';
+      window.location.href = next;
+    }
+  });
+
+  // Fallback: if already signed in
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    if (session) {
+      const next = new URLSearchParams(window.location.search).get('next') || '/dashboard';
+      window.location.href = next;
+    }
+  });
+</script>

@@ -1,0 +1,106 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const allPosts = await getCollection('blog');
+const posts    = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const featured = posts.filter(p => p.data.featured);
+const regular  = posts.filter(p => !p.data.featured);
+const cats     = [...new Set(posts.map(p => p.data.category))];
+---
+
+<BaseLayout
+  title="Global Investment Blog — ETFs, Diversification & Wealth Protection"
+  description="In-depth articles on global ETF investing, currency diversification, sovereign risk, and wealth protection strategies."
+>
+  <Header />
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="mb-12">
+      <h1 class="font-display text-4xl sm:text-5xl font-extrabold text-white mb-4">Global Investment Intelligence</h1>
+      <p class="text-slate-400 text-lg max-w-2xl">
+        Deep dives on ETF strategy, currency risk, sovereign risk, and building wealth beyond borders.
+      </p>
+    </div>
+
+    {featured.length > 0 && (
+      <section class="mb-16">
+        <p class="text-xs text-brand-400 font-semibold uppercase tracking-widest mb-6">Featured</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {featured.map(post => (
+            <a href={`/blog/${post.slug}`}
+               class="group bg-surface-800 border border-slate-800 hover:border-brand-500/40 rounded-2xl p-6 transition-colors">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-xs text-brand-400 font-medium bg-brand-500/10 px-2 py-0.5 rounded-full">{post.data.category}</span>
+                {post.data.isPremium && <span class="text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">Premium</span>}
+              </div>
+              <h2 class="text-white font-semibold text-lg mb-2 group-hover:text-brand-400 transition-colors leading-snug">{post.data.title}</h2>
+              <p class="text-slate-400 text-sm mb-4 line-clamp-2">{post.data.description}</p>
+              <div class="flex justify-between text-xs text-slate-500">
+                <time datetime={post.data.pubDate.toISOString()}>
+                  {post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                </time>
+                {post.data.readingTime && <span>{post.data.readingTime} min read</span>}
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Category filter -->
+    <div class="flex gap-2 mb-8 flex-wrap">
+      <button class="cat-pill border border-brand-500 text-brand-400 bg-brand-500/10 px-3 py-1.5 rounded-full text-sm" data-cat="all">All</button>
+      {cats.map(cat => (
+        <button class="cat-pill border border-slate-700 text-slate-400 hover:border-slate-500 px-3 py-1.5 rounded-full text-sm transition-colors" data-cat={cat}>{cat}</button>
+      ))}
+    </div>
+
+    <div id="posts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {regular.map(post => (
+        <a href={`/blog/${post.slug}`}
+           class="group post-card bg-surface-800 border border-slate-800 hover:border-slate-700 rounded-2xl p-5 transition-colors"
+           data-category={post.data.category}>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs text-slate-500">{post.data.category}</span>
+            {post.data.isPremium && <span class="text-xs text-amber-400">🔒</span>}
+          </div>
+          <h2 class="text-white font-semibold mb-2 group-hover:text-brand-400 transition-colors line-clamp-2">{post.data.title}</h2>
+          <p class="text-slate-500 text-sm line-clamp-2 mb-4">{post.data.description}</p>
+          <div class="flex justify-between text-xs text-slate-600">
+            <time>{post.data.pubDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</time>
+            {post.data.readingTime && <span>{post.data.readingTime} min</span>}
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <div id="empty-state" class="hidden text-center py-16 text-slate-500">No posts in this category yet.</div>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<script>
+  document.querySelectorAll('.cat-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      const cat = (pill as HTMLElement).dataset.cat!;
+      document.querySelectorAll('.cat-pill').forEach(p => {
+        p.classList.remove('border-brand-500','text-brand-400','bg-brand-500/10');
+        p.classList.add('border-slate-700','text-slate-400');
+      });
+      pill.classList.add('border-brand-500','text-brand-400','bg-brand-500/10');
+      pill.classList.remove('border-slate-700','text-slate-400');
+
+      let visible = 0;
+      document.querySelectorAll('.post-card').forEach(card => {
+        const show = cat === 'all' || (card as HTMLElement).dataset.category === cat;
+        (card as HTMLElement).style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      document.getElementById('empty-state')?.classList.toggle('hidden', visible > 0);
+    });
+  });
+</script>

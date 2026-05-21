@@ -1,0 +1,207 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const reason = Astro.url.searchParams.get('reason');
+
+const freeFeatures    = ['Global markets dashboard','Top 5 ETFs per category','30-day price chart','Macro pulse indicators','Free blog articles','Weekly newsletter'];
+const premiumFeatures = ['Everything in Free','200+ ETF full tracker','ETF price history (5 years)','Sovereign risk scores (50 countries)','Currency exposure analysis','Personal watchlist (unlimited)','Smart alerts (email)','Premium research articles','Portfolio radar heatmap','Priority email support'];
+const teamFeatures    = ['Everything in Premium','5 user seats','Shared watchlists','CSV/Excel export','API access (beta)','Dedicated support'];
+---
+
+<BaseLayout
+  title="Pricing — Global Wealth Radar"
+  description="Start free. Upgrade to Premium for full ETF tracking, sovereign risk scores, and personal watchlist. $19/month."
+>
+  <Header />
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+
+    {reason === 'premium_required' && (
+      <div class="mb-8 bg-amber-500/10 border border-amber-500/30 rounded-xl px-5 py-4 text-amber-300 text-sm flex items-center gap-3">
+        <span class="text-xl shrink-0">🔒</span>
+        <span>That page requires a Premium subscription. Upgrade below to unlock full access.</span>
+      </div>
+    )}
+
+    <div class="text-center mb-16">
+      <h1 class="font-display text-5xl font-extrabold text-white mb-4">Simple, honest pricing</h1>
+      <p class="text-slate-400 text-xl max-w-xl mx-auto">Start free. Upgrade when your portfolio demands more intelligence.</p>
+
+      <div class="inline-flex items-center gap-1 mt-8 bg-surface-800 border border-slate-800 rounded-xl p-1.5">
+        <button id="toggle-monthly" class="billing-toggle px-4 py-2 rounded-lg text-sm font-medium bg-surface-700 text-white transition-colors">Monthly</button>
+        <button id="toggle-annual"  class="billing-toggle px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition-colors">
+          Annual <span class="text-brand-400 text-xs font-semibold ml-1">Save 20%</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+
+      <!-- FREE -->
+      <div class="bg-surface-800 border border-slate-800 rounded-2xl p-7 flex flex-col">
+        <div class="mb-6">
+          <p class="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-3">Free</p>
+          <div class="flex items-end gap-1"><span class="text-5xl font-bold text-white">$0</span></div>
+          <p class="text-slate-500 text-sm mt-1">Forever free</p>
+        </div>
+        <ul class="space-y-3 flex-1 mb-8">
+          {freeFeatures.map(f => (
+            <li class="flex items-start gap-2.5 text-sm text-slate-400">
+              <span class="text-brand-500 mt-0.5 shrink-0">✓</span>{f}
+            </li>
+          ))}
+        </ul>
+        <a href="/dashboard" class="block text-center border border-slate-700 hover:border-slate-500 text-slate-300 font-medium py-3 rounded-xl transition-colors">
+          Start Free
+        </a>
+      </div>
+
+      <!-- PREMIUM -->
+      <div class="bg-gradient-to-b from-brand-500/15 to-surface-800 border border-brand-500/50 rounded-2xl p-7 flex flex-col relative">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+          <span class="bg-brand-500 text-white text-xs font-bold px-4 py-1.5 rounded-full">MOST POPULAR</span>
+        </div>
+        <div class="mb-6">
+          <p class="text-brand-400 text-sm font-semibold uppercase tracking-wider mb-3">Premium</p>
+          <div class="flex items-end gap-1">
+            <span class="text-5xl font-bold text-white" id="premium-price">$19</span>
+            <span class="text-slate-400 text-sm mb-2">/month</span>
+          </div>
+          <p class="text-slate-500 text-sm mt-1" id="premium-billed">Billed monthly · Cancel anytime</p>
+        </div>
+        <ul class="space-y-3 flex-1 mb-8">
+          {premiumFeatures.map(f => (
+            <li class="flex items-start gap-2.5 text-sm text-slate-300">
+              <span class="text-brand-500 mt-0.5 shrink-0">✓</span>{f}
+            </li>
+          ))}
+        </ul>
+        <button id="subscribe-monthly" data-price={import.meta.env.STRIPE_PRICE_MONTHLY || 'price_MONTHLY_ID'}
+          class="subscribe-btn w-full text-center bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3.5 rounded-xl transition-colors">
+          Start Premium →
+        </button>
+        <button id="subscribe-annual" data-price={import.meta.env.STRIPE_PRICE_ANNUAL || 'price_ANNUAL_ID'}
+          class="subscribe-btn hidden w-full text-center bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3.5 rounded-xl transition-colors">
+          Start Premium (Annual) →
+        </button>
+        <p class="text-center text-xs text-slate-500 mt-3">7-day free trial · Cancel anytime</p>
+      </div>
+
+      <!-- TEAM -->
+      <div class="bg-surface-800 border border-slate-800 rounded-2xl p-7 flex flex-col">
+        <div class="mb-6">
+          <p class="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-3">Team</p>
+          <div class="flex items-end gap-1"><span class="text-5xl font-bold text-white">$49</span><span class="text-slate-400 text-sm mb-2">/month</span></div>
+          <p class="text-slate-500 text-sm mt-1">Up to 5 seats</p>
+        </div>
+        <ul class="space-y-3 flex-1 mb-8">
+          {teamFeatures.map(f => (
+            <li class="flex items-start gap-2.5 text-sm text-slate-400">
+              <span class="text-brand-500 mt-0.5 shrink-0">✓</span>{f}
+            </li>
+          ))}
+        </ul>
+        <a href="mailto:hello@globalwealthradar.com?subject=Team Plan"
+          class="block text-center border border-slate-700 hover:border-slate-500 text-slate-300 font-medium py-3 rounded-xl transition-colors">
+          Contact Sales
+        </a>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <section class="max-w-2xl mx-auto">
+      <h2 class="font-display text-2xl font-bold text-white text-center mb-10">Frequently asked questions</h2>
+      <div class="space-y-3">
+        {[
+          ['Can I cancel anytime?', 'Yes. Cancel from your account settings anytime. You keep access until the end of your billing period.'],
+          ['Is my payment secure?', 'Payments are processed by Stripe, the industry standard. We never store your card details.'],
+          ['How often is data updated?', 'Market data is updated twice daily on trading days: at market open (10am EST) and close (6pm EST).'],
+          ['Do you offer a free trial?', 'Yes. Premium includes a 7-day free trial. You won\'t be charged until the trial ends.'],
+          ['Is this financial advice?', 'No. Global Wealth Radar provides data tools for informational purposes only. Always consult a qualified financial advisor.'],
+        ].map(([q, a], i) => (
+          <div class="border border-slate-800 rounded-xl overflow-hidden">
+            <button class="faq-btn w-full text-left px-5 py-4 flex items-center justify-between text-white font-medium hover:text-brand-400 transition-colors" data-index={i}>
+              <span>{q}</span>
+              <span class="faq-icon text-slate-500 text-xl ml-4 shrink-0">+</span>
+            </button>
+            <div class="faq-body hidden px-5 pb-4 text-slate-400 text-sm leading-relaxed">{a}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <div class="mt-20 text-center">
+      <p class="text-slate-500 text-sm mb-6">Trusted by investors in 30+ countries</p>
+      <div class="flex flex-wrap justify-center gap-8 text-slate-600 text-sm">
+        <span>🔒 SSL Encrypted</span>
+        <span>💳 Powered by Stripe</span>
+        <span>🗄️ Data by Alpha Vantage</span>
+        <span>⚡ 99.9% Uptime</span>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<script>
+  import { supabase } from '../lib/supabase.ts';
+  import { createCheckoutSession } from '../lib/stripe.ts';
+
+  // Billing toggle
+  let isAnnual = false;
+  const priceEl  = document.getElementById('premium-price')!;
+  const billedEl = document.getElementById('premium-billed')!;
+
+  document.getElementById('toggle-monthly')?.addEventListener('click', () => setAnnual(false));
+  document.getElementById('toggle-annual')?.addEventListener('click',  () => setAnnual(true));
+
+  function setAnnual(annual: boolean) {
+    isAnnual = annual;
+    priceEl.textContent  = annual ? '$15' : '$19';
+    billedEl.textContent = annual ? 'Billed $182/year (save $46) · Cancel anytime' : 'Billed monthly · Cancel anytime';
+
+    document.getElementById('toggle-monthly')?.classList.toggle('bg-surface-700', !annual);
+    document.getElementById('toggle-monthly')?.classList.toggle('text-white', !annual);
+    document.getElementById('toggle-annual')?.classList.toggle('bg-surface-700', annual);
+    document.getElementById('toggle-annual')?.classList.toggle('text-white', annual);
+
+    document.getElementById('subscribe-monthly')?.classList.toggle('hidden', annual);
+    document.getElementById('subscribe-annual')?.classList.toggle('hidden', !annual);
+  }
+
+  // Checkout
+  document.querySelectorAll('.subscribe-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { window.location.href = '/auth/signin?next=/pricing'; return; }
+
+      const button  = btn as HTMLButtonElement;
+      const priceId = button.dataset.price!;
+      button.textContent = 'Redirecting...';
+      button.disabled = true;
+
+      try {
+        const url = await createCheckoutSession(priceId, user.id, user.email!);
+        window.location.href = url;
+      } catch (err: any) {
+        button.textContent = 'Error — Try Again';
+        button.disabled = false;
+        console.error(err);
+      }
+    });
+  });
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const body = btn.nextElementSibling as HTMLElement;
+      const icon = btn.querySelector('.faq-icon') as HTMLElement;
+      const open = !body.classList.contains('hidden');
+      document.querySelectorAll('.faq-body').forEach(b => b.classList.add('hidden'));
+      document.querySelectorAll('.faq-icon').forEach(i => i.textContent = '+');
+      if (!open) { body.classList.remove('hidden'); icon.textContent = '−'; }
+    });
+  });
+</script>

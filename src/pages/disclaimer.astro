@@ -1,0 +1,21 @@
+---
+// src/pages/disclaimer.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+const year = new Date().getFullYear();
+---
+<BaseLayout title="Disclaimer — Global Wealth Radar" description="Investment disclaimer and terms of use for Global Wealth Radar.">
+  <Header />
+  <main class="max-w-3xl mx-auto px-4 py-16">
+    <h1 class="font-display text-3xl font-bold text-white mb-8">Investment Disclaimer</h1>
+    <div class="prose prose-invert prose-slate max-w-none">
+      <p class="text-slate-400 text-sm mb-6">Last updated: January {year}</p>
+      <p>Global Wealth Radar is a financial data and analysis platform. The information provided on this website is for <strong>informational and educational purposes only</strong> and does not constitute financial, investment, tax, or legal advice.</p>
+      <p>Past performance is not indicative of future results. All investments involve risk, including the possible loss of principal. You should consult with a qualified financial advisor before making any investment decisions.</p>
+      <p>Market data is provided by third-party sources (Alpha Vantage, Financial Modeling Prep) and may be delayed or inaccurate. We make no representations as to the accuracy, completeness, or timeliness of any data displayed.</p>
+      <p>ETF data, prices, and metrics displayed are for informational purposes only. Always verify information with official fund documents and your brokerage before investing.</p>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

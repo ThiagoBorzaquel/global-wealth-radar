@@ -1,0 +1,132 @@
+---
+interface Props {
+  activeNav?: string;
+}
+const { activeNav = '' } = Astro.props;
+
+const navItems = [
+  { href: '/dashboard',              label: 'Overview',       icon: '◎', free: true  },
+  { href: '/premium',                label: 'Premium Home',   icon: '★', free: false },
+  { href: '/premium/etf-tracker',    label: 'ETF Tracker',    icon: '📊', free: false },
+  { href: '/premium/watchlist',      label: 'Watchlist',      icon: '🔔', free: false },
+  { href: '/premium/sovereign-risk', label: 'Sovereign Risk', icon: '⚠️', free: false },
+  { href: '/blog',                   label: 'Research',       icon: '📰', free: true  },
+];
+---
+
+<div class="min-h-screen bg-surface-900 flex">
+  <!-- Sidebar desktop -->
+  <aside class="hidden lg:flex flex-col w-56 bg-surface-800 border-r border-slate-800 fixed inset-y-0 left-0 z-30">
+    <a href="/" class="flex items-center gap-2 px-5 py-5 border-b border-slate-800">
+      <span class="text-brand-500 text-xl">◎</span>
+      <span class="font-display font-bold text-white text-sm">Wealth Radar</span>
+    </a>
+    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      {navItems.map(item => (
+        <a
+          href={item.href}
+          class:list={[
+            'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors',
+            activeNav === item.href
+              ? 'bg-brand-500/15 text-brand-400 font-medium'
+              : 'text-slate-400 hover:text-white hover:bg-surface-700',
+          ]}
+        >
+          <span class="text-base">{item.icon}</span>
+          <span class="flex-1">{item.label}</span>
+          {!item.free && <span class="text-xs text-amber-400/70">PRO</span>}
+        </a>
+      ))}
+    </nav>
+    <div class="border-t border-slate-800 px-4 py-4">
+      <div id="sidebar-user" class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-slate-700 animate-pulse shrink-0"></div>
+        <div class="flex-1 min-w-0">
+          <div class="h-3 bg-slate-700 rounded w-20 mb-1 animate-pulse"></div>
+          <div class="h-2 bg-slate-800 rounded w-12 animate-pulse"></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile bottom nav -->
+  <nav class="lg:hidden fixed bottom-0 inset-x-0 bg-surface-800 border-t border-slate-800 z-50">
+    <div class="flex justify-around py-2">
+      {[
+        { href: '/dashboard',            icon: '◎', label: 'Home'     },
+        { href: '/premium/etf-tracker',  icon: '📊', label: 'ETFs'    },
+        { href: '/premium/watchlist',    icon: '🔔', label: 'Watch'   },
+        { href: '/premium/sovereign-risk', icon: '⚠️', label: 'Risk'  },
+        { href: '/blog',                 icon: '📰', label: 'Research' },
+      ].map(item => (
+        <a href={item.href} class="flex flex-col items-center gap-1 px-3 py-1.5 text-slate-400 hover:text-white transition-colors">
+          <span class="text-lg">{item.icon}</span>
+          <span class="text-xs">{item.label}</span>
+        </a>
+      ))}
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="flex-1 lg:ml-56 pb-20 lg:pb-0">
+    <header class="sticky top-0 z-40 bg-surface-900/80 backdrop-blur-xl border-b border-slate-800 px-4 lg:px-8 py-4 flex items-center justify-between">
+      <div id="page-title" class="text-white font-semibold text-sm"></div>
+      <div class="flex items-center gap-3">
+        <span id="premium-badge" class="hidden text-xs text-brand-400 font-medium bg-brand-500/10 border border-brand-500/20 px-3 py-1 rounded-full">★ Premium</span>
+        <a href="/pricing" id="upgrade-btn" class="hidden text-xs bg-brand-500 hover:bg-brand-600 text-white font-medium px-3 py-1.5 rounded-lg transition-colors">Upgrade</a>
+        <img id="user-avatar" src="" alt="avatar" class="hidden w-8 h-8 rounded-full border border-slate-700" />
+      </div>
+    </header>
+    <div class="px-4 lg:px-8 py-8">
+      <slot />
+    </div>
+  </main>
+</div>
+
+<script>
+  import { supabase } from '../lib/supabase.ts';
+
+  const titles: Record<string, string> = {
+    '/dashboard': 'Global Markets',
+    '/premium': 'Premium Dashboard',
+    '/premium/etf-tracker': 'ETF Tracker',
+    '/premium/watchlist': 'My Watchlist',
+    '/premium/sovereign-risk': 'Sovereign Risk',
+  };
+
+  async function initLayout() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name, is_premium, avatar_url')
+      .eq('id', user.id)
+      .single();
+
+    const sidebarUser = document.getElementById('sidebar-user');
+    if (sidebarUser && profile) {
+      sidebarUser.innerHTML = `
+        <img src="${profile.avatar_url || ''}" alt="avatar" class="w-8 h-8 rounded-full border border-slate-700 shrink-0" />
+        <div class="flex-1 min-w-0">
+          <p class="text-white text-xs font-medium truncate">${profile.full_name || user.email}</p>
+          <p class="text-slate-500 text-xs">${profile.is_premium ? '★ Premium' : 'Free plan'}</p>
+        </div>
+      `;
+    }
+
+    const avatar = document.getElementById('user-avatar') as HTMLImageElement;
+    if (avatar && profile?.avatar_url) { avatar.src = profile.avatar_url; avatar.classList.remove('hidden'); }
+
+    if (profile?.is_premium) {
+      document.getElementById('premium-badge')?.classList.remove('hidden');
+    } else {
+      document.getElementById('upgrade-btn')?.classList.remove('hidden');
+    }
+
+    const titleEl = document.getElementById('page-title');
+    if (titleEl) titleEl.textContent = titles[window.location.pathname] || 'Dashboard';
+  }
+
+  initLayout();
+</script>

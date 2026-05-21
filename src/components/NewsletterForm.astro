@@ -1,0 +1,62 @@
+---
+interface Props {
+  source?: string;
+}
+const { source = 'landing' } = Astro.props;
+---
+
+<div class="w-full max-w-md mx-auto">
+  <form id="newsletter-form" data-source={source} class="flex flex-col sm:flex-row gap-3">
+    <input
+      type="email"
+      id="newsletter-email"
+      placeholder="your@email.com"
+      required
+      class="flex-1 bg-surface-800 border border-slate-700 text-white placeholder-slate-500
+             px-4 py-3 rounded-xl focus:outline-none focus:border-brand-500 text-sm"
+    />
+    <button
+      type="submit"
+      class="bg-brand-500 hover:bg-brand-600 text-white font-semibold px-6 py-3
+             rounded-xl text-sm transition-colors whitespace-nowrap"
+    >
+      Subscribe Free
+    </button>
+  </form>
+  <p id="newsletter-msg" class="text-sm text-center mt-3 hidden"></p>
+</div>
+
+<script>
+  import { supabase } from '../lib/supabase.ts';
+
+  const form = document.getElementById('newsletter-form') as HTMLFormElement;
+  const msg  = document.getElementById('newsletter-msg')!;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email  = (document.getElementById('newsletter-email') as HTMLInputElement).value;
+    const source = form.dataset.source || 'landing';
+
+    const btn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+    btn.textContent = 'Subscribing...';
+    btn.disabled = true;
+
+    const { error } = await supabase.from('newsletter_subscribers').insert({ email, source });
+
+    msg.classList.remove('hidden');
+    if (error?.code === '23505') {
+      msg.textContent = '✓ You\'re already on the list!';
+      msg.className = 'text-sm text-center mt-3 text-brand-400';
+    } else if (error) {
+      msg.textContent = 'Something went wrong. Try again.';
+      msg.className = 'text-sm text-center mt-3 text-red-400';
+      btn.disabled = false;
+      btn.textContent = 'Subscribe Free';
+    } else {
+      msg.textContent = '🎉 You\'re in! Check your inbox soon.';
+      msg.className = 'text-sm text-center mt-3 text-brand-400';
+      (document.getElementById('newsletter-email') as HTMLInputElement).value = '';
+      btn.textContent = '✓ Subscribed';
+    }
+  });
+</script>

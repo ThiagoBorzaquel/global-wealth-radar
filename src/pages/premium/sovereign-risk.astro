@@ -1,0 +1,96 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import PremiumGuard from '../../components/PremiumGuard.astro';
+
+const countries = [
+  { name: 'Switzerland', flag: '🇨🇭', score: 92, risk: 'Very Low',  etf: 'EWL',  color: 'text-brand-400',  bar: 'bg-brand-500'  },
+  { name: 'Singapore',   flag: '🇸🇬', score: 91, risk: 'Very Low',  etf: 'EWS',  color: 'text-brand-400',  bar: 'bg-brand-500'  },
+  { name: 'Norway',      flag: '🇳🇴', score: 89, risk: 'Very Low',  etf: 'NORW', color: 'text-brand-400',  bar: 'bg-brand-500'  },
+  { name: 'Germany',     flag: '🇩🇪', score: 84, risk: 'Low',       etf: 'EWG',  color: 'text-blue-400',   bar: 'bg-blue-500'   },
+  { name: 'Australia',   flag: '🇦🇺', score: 82, risk: 'Low',       etf: 'EWA',  color: 'text-blue-400',   bar: 'bg-blue-500'   },
+  { name: 'USA',         flag: '🇺🇸', score: 78, risk: 'Low',       etf: 'VTI',  color: 'text-blue-400',   bar: 'bg-blue-500'   },
+  { name: 'Japan',       flag: '🇯🇵', score: 72, risk: 'Moderate',  etf: 'EWJ',  color: 'text-yellow-400', bar: 'bg-yellow-500' },
+  { name: 'South Korea', flag: '🇰🇷', score: 70, risk: 'Moderate',  etf: 'EWY',  color: 'text-yellow-400', bar: 'bg-yellow-500' },
+  { name: 'India',       flag: '🇮🇳', score: 58, risk: 'Moderate',  etf: 'INDA', color: 'text-yellow-400', bar: 'bg-yellow-500' },
+  { name: 'Brazil',      flag: '🇧🇷', score: 52, risk: 'High',      etf: 'EWZ',  color: 'text-orange-400', bar: 'bg-orange-500' },
+  { name: 'Mexico',      flag: '🇲🇽', score: 49, risk: 'High',      etf: 'EWW',  color: 'text-orange-400', bar: 'bg-orange-500' },
+  { name: 'Turkey',      flag: '🇹🇷', score: 32, risk: 'Very High', etf: 'TUR',  color: 'text-red-400',    bar: 'bg-red-500'    },
+  { name: 'Argentina',   flag: '🇦🇷', score: 18, risk: 'Critical',  etf: 'ARGT', color: 'text-red-500',    bar: 'bg-red-600'    },
+];
+---
+<BaseLayout title="Sovereign Risk Monitor — Global Wealth Radar" description="Country-by-country sovereign risk analysis" noindex={true}>
+  <PremiumGuard>
+    <DashboardLayout activeNav="/premium/sovereign-risk">
+
+      <div class="mb-8">
+        <h1 class="text-xl font-bold text-white mb-2">Sovereign Risk Monitor</h1>
+        <p class="text-slate-400 text-sm max-w-2xl">
+          Composite risk scores based on fiscal health, monetary stability, political risk, and external vulnerability.
+          Scores 0–100: higher = lower risk. Updated monthly.
+        </p>
+      </div>
+
+      <!-- Legend -->
+      <div class="flex flex-wrap gap-4 mb-8">
+        {[
+          { label: 'Very Low (80–100)', color: 'bg-brand-500'  },
+          { label: 'Low (60–79)',       color: 'bg-blue-500'   },
+          { label: 'Moderate (45–59)', color: 'bg-yellow-500' },
+          { label: 'High (25–44)',      color: 'bg-orange-500' },
+          { label: 'Critical (0–24)',   color: 'bg-red-600'    },
+        ].map(l => (
+          <div class="flex items-center gap-2 text-xs text-slate-400">
+            <span class={`w-2.5 h-2.5 rounded-full ${l.color}`}></span>
+            {l.label}
+          </div>
+        ))}
+      </div>
+
+      <!-- Table -->
+      <div class="bg-surface-800 border border-slate-800 rounded-2xl overflow-hidden mb-8">
+        <div class="grid px-5 py-3 border-b border-slate-800 text-xs text-slate-500 uppercase tracking-wider"
+             style="grid-template-columns: 2fr 80px 2fr 80px;">
+          <span>Country</span>
+          <span class="text-center">Score</span>
+          <span>Risk Level</span>
+          <span class="text-right">ETF</span>
+        </div>
+
+        {countries.map(c => (
+          <div class="grid px-5 py-4 border-b border-slate-800/50 last:border-0 hover:bg-surface-700/30 transition-colors items-center"
+               style="grid-template-columns: 2fr 80px 2fr 80px;">
+            <div class="flex items-center gap-3">
+              <span class="text-xl">{c.flag}</span>
+              <span class="text-white font-medium text-sm">{c.name}</span>
+            </div>
+            <div class="text-center">
+              <span class={`${c.color} font-bold font-mono text-sm`}>{c.score}</span>
+            </div>
+            <div class="flex items-center gap-3 pr-4">
+              <div class="flex-1 max-w-[100px] h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                <div class={`h-full rounded-full ${c.bar}`} style={`width:${c.score}%`}></div>
+              </div>
+              <span class={`text-xs ${c.color} font-medium whitespace-nowrap`}>{c.risk}</span>
+            </div>
+            <div class="text-right">
+              <span class="text-slate-400 font-mono text-xs bg-surface-700 px-2 py-0.5 rounded">{c.etf}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Methodology -->
+      <div class="bg-surface-800/50 border border-slate-800 rounded-xl p-5 text-sm text-slate-500">
+        <p class="font-medium text-slate-400 mb-2">📊 Methodology</p>
+        <p>
+          Composite scores calculated from: IMF fiscal data (25%), World Bank governance indicators (25%),
+          60-day currency volatility (20%), CDS spreads / market-implied default risk (20%),
+          and capital control index (10%). Higher scores = lower risk to private wealth.
+          Not financial advice. Data updated monthly.
+        </p>
+      </div>
+
+    </DashboardLayout>
+  </PremiumGuard>
+</BaseLayout>
