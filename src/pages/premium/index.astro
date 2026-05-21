@@ -42,7 +42,7 @@ const quickLinks = [
         <div class="bg-surface-800 border border-slate-800 rounded-2xl p-5">
           <h2 class="text-white font-semibold mb-4 flex justify-between">
             My Watchlist
-            <a href="/premium/watchlist" class="text-xs text-brand-400 hover:text-brand-300">Manage →</a>
+            <a href={`${import.meta.env.BASE_URL}premium/watchlist`} class="text-xs text-brand-400 hover:text-brand-300">Manage →</a>
           </h2>
           <div id="quick-wl"><p class="text-slate-500 text-sm animate-pulse">Loading...</p></div>
         </div>
@@ -113,7 +113,7 @@ const quickLinks = [
     } else {
       document.getElementById('quick-wl')!.innerHTML = `
         <p class="text-slate-500 text-sm">No tickers yet.</p>
-        <a href="/premium/watchlist" class="text-brand-400 text-sm mt-2 inline-block">Add your first ETF →</a>`;
+        <a href="${import.meta.env.BASE_URL}premium/watchlist" class="text-brand-400 text-sm mt-2 inline-block">Add your first ETF →</a>`;
     }
   }
   load();

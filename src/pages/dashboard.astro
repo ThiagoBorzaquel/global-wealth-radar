@@ -55,7 +55,7 @@ const tabs = ['All', 'US Equity', 'International', 'Bond', 'Commodity'];
     <section class="mb-8">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-xs text-slate-500 uppercase tracking-widest font-semibold">Top ETFs</h2>
-        <a href="/pricing" class="text-xs text-brand-400 hover:text-brand-300 transition-colors">See all 200+ in Premium →</a>
+        <a href={`${import.meta.env.BASE_URL}pricing`} class="text-xs text-brand-400 hover:text-brand-300 transition-colors">See all 200+ in Premium →</a>
       </div>
 
       <div class="flex gap-1 mb-4 bg-surface-800 border border-slate-800 rounded-xl p-1 w-fit overflow-x-auto">
@@ -96,11 +96,11 @@ const tabs = ['All', 'US Equity', 'International', 'Bond', 'Commodity'];
       <div class="lg:col-span-2">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-xs text-slate-500 uppercase tracking-widest font-semibold">Latest Research</h2>
-          <a href="/blog" class="text-xs text-slate-500 hover:text-white transition-colors">All articles →</a>
+          <a href={`${import.meta.env.BASE_URL}blog`} class="text-xs text-slate-500 hover:text-white transition-colors">All articles →</a>
         </div>
         <div class="space-y-3">
           {posts.map(post => (
-            <a href={`/blog/${post.slug}`}
+            <a href={`${import.meta.env.BASE_URL}blog/${post.slug}`}
                class="group flex gap-4 bg-surface-800 border border-slate-800 hover:border-slate-700 rounded-xl p-4 transition-colors">
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-1">
@@ -148,7 +148,7 @@ const tabs = ['All', 'US Equity', 'International', 'Bond', 'Commodity'];
         <div class="bg-brand-500/10 border border-brand-500/30 rounded-xl p-4">
           <p class="text-brand-400 text-sm font-semibold mb-1">🔒 Premium Access</p>
           <p class="text-slate-400 text-xs mb-3">200+ ETFs, sovereign risk scores, watchlist & alerts.</p>
-          <a href="/pricing" class="block text-center bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium py-2 rounded-lg transition-colors">
+          <a href={`${import.meta.env.BASE_URL}pricing`} class="block text-center bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium py-2 rounded-lg transition-colors">
             Upgrade — $19/mo
           </a>
         </div>

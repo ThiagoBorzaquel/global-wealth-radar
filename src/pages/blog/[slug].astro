@@ -43,9 +43,9 @@ const fmtDate = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', mo
   <article class="max-w-3xl mx-auto px-4 sm:px-6 py-16">
 
     <nav class="text-sm text-slate-500 mb-8">
-      <a href="/" class="hover:text-white">Home</a>
+      <a href={`${import.meta.env.BASE_URL}`} class="hover:text-white">Home</a>
       <span class="mx-2">/</span>
-      <a href="/blog" class="hover:text-white">Blog</a>
+      <a href={`${import.meta.env.BASE_URL}blog`} class="hover:text-white">Blog</a>
       <span class="mx-2">/</span>
       <span class="text-slate-400">{post.data.category}</span>
     </nav>
@@ -83,8 +83,8 @@ const fmtDate = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', mo
               <h3 class="text-white font-bold text-xl mb-2">Premium Article</h3>
               <p class="text-slate-400 mb-4 max-w-sm text-sm">Available to Premium subscribers. Unlock for $19/month.</p>
               <div class="flex gap-3 justify-center">
-                <a href="/pricing" class="bg-brand-500 hover:bg-brand-600 text-white font-semibold px-6 py-2.5 rounded-xl transition-colors">Unlock Premium →</a>
-                <a href="/auth/signin" class="border border-slate-700 text-slate-300 px-6 py-2.5 rounded-xl hover:border-slate-500 transition-colors">Sign in</a>
+                <a href={`${import.meta.env.BASE_URL}pricing`} class="bg-brand-500 hover:bg-brand-600 text-white font-semibold px-6 py-2.5 rounded-xl transition-colors">Unlock Premium →</a>
+                <a href={`${import.meta.env.BASE_URL}auth/signin`} class="border border-slate-700 text-slate-300 px-6 py-2.5 rounded-xl hover:border-slate-500 transition-colors">Sign in</a>
               </div>
             </div>
           </div>

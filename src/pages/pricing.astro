@@ -53,7 +53,7 @@ const teamFeatures    = ['Everything in Premium','5 user seats','Shared watchlis
             </li>
           ))}
         </ul>
-        <a href="/dashboard" class="block text-center border border-slate-700 hover:border-slate-500 text-slate-300 font-medium py-3 rounded-xl transition-colors">
+        <a href={`${import.meta.env.BASE_URL}auth/signin`} class="block text-center border border-slate-700 hover:border-slate-500 text-slate-300 font-medium py-3 rounded-xl transition-colors">
           Start Free
         </a>
       </div>
