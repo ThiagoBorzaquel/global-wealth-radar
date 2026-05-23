@@ -20,15 +20,25 @@ export async function createCheckoutSession(
   userId: string,
   email: string
 ): Promise<string> {
-  const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
-  const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+  // Resolve the Supabase Functions endpoint at runtime.
+  // If PUBLIC_SUPABASE_URL isn't provided at build time, fall back to a
+  // relative path so the client bundle doesn't contain the literal "undefined" string.
+  const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL || '';
+  const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
 
-  const res = await fetch(`${supabaseUrl}/functions/v1/create-checkout`, {
+  const endpoint = supabaseUrl ? `${supabaseUrl}/functions/v1/create-checkout` : '/functions/v1/create-checkout';
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (supabaseKey) {
+    headers['Authorization'] = `Bearer ${supabaseKey}`;
+    headers['apikey'] = supabaseKey;
+  }
+
+  const res = await fetch(endpoint, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${supabaseKey}`,
-    },
+    headers,
     body: JSON.stringify({ priceId, userId, email }),
   });
 

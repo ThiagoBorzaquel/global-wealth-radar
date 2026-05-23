@@ -33,7 +33,7 @@ const tabs = ['All', 'US Equity', 'International', 'Bond', 'Commodity'];
       </div>
       <div class="hidden sm:flex items-center gap-2 bg-surface-800 border border-slate-800 rounded-xl px-4 py-2">
         <span class="w-2 h-2 bg-brand-500 rounded-full animate-pulse"></span>
-        <span class="text-slate-400 text-sm">Updated daily</span>
+        <span class="text-slate-400 text-sm">Updated twice daily on trading days</span>
       </div>
     </div>
 
@@ -99,8 +99,10 @@ const tabs = ['All', 'US Equity', 'International', 'Bond', 'Commodity'];
           <a href={`${import.meta.env.BASE_URL}blog`} class="text-xs text-slate-500 hover:text-white transition-colors">All articles →</a>
         </div>
         <div class="space-y-3">
-          {posts.map(post => (
-            <a href={`${import.meta.env.BASE_URL}blog/${post.slug}`}
+          {posts.map(post => {
+            const slug = post.id.replace('.md', '').split('/').pop() || post.id;
+            return (
+            <a href={`${import.meta.env.BASE_URL}blog/${slug}`}
                class="group flex gap-4 bg-surface-800 border border-slate-800 hover:border-slate-700 rounded-xl p-4 transition-colors">
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-1">
@@ -117,7 +119,8 @@ const tabs = ['All', 'US Equity', 'International', 'Bond', 'Commodity'];
               </div>
               <span class="text-slate-700 group-hover:text-brand-500 text-lg self-center transition-colors">→</span>
             </a>
-          ))}
+            );
+          })}
         </div>
       </div>
 

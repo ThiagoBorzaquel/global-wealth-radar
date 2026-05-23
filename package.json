@@ -10,15 +10,16 @@
     "etf:update": "node scripts/update-etf-data.js",
     "etf:dry-run": "node scripts/update-etf-data.js --dry-run",
     "etf:seed": "node scripts/seed-etf-metadata.js",
+    "admin:create": "node scripts/create-admin-user.js",
     "alerts:check": "curl -X POST $PUBLIC_SUPABASE_URL/functions/v1/check-alerts -H 'Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY'"
   },
   "dependencies": {
-    "@astrojs/mdx": "^3.0.0",
+    "@astrojs/mdx": "^5.0.6",
     "@astrojs/sitemap": "^3.0.0",
     "@astrojs/tailwind": "^5.0.0",
-    "@supabase/supabase-js": "^2.39.0",
     "@stripe/stripe-js": "^3.0.0",
-    "astro": "^4.0.0"
+    "@supabase/supabase-js": "^2.39.0",
+    "astro": "^6.3.7"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.10",
