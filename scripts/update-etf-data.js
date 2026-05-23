@@ -17,6 +17,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
 const AV_KEY       = process.env.ALPHA_VANTAGE_KEY;
+const FMP_KEY      = process.env.FMP_KEY;
 const DELAY_MS     = 15_000;  // 15s between requests (free tier: 5 req/min)
 
 const args          = process.argv.slice(2);
@@ -24,8 +25,8 @@ const DRY_RUN       = args.includes('--dry-run');
 const UPDATE_HIST   = args.includes('--history');
 const SINGLE_TICKER = args.find(a => a.startsWith('--ticker='))?.split('=')[1];
 
-if (!SUPABASE_URL || !SUPABASE_KEY || !AV_KEY) {
-  console.error('❌ Missing env vars: SUPABASE_URL, SUPABASE_SERVICE_KEY, ALPHA_VANTAGE_KEY');
+if (!SUPABASE_URL || !SUPABASE_KEY || (!AV_KEY && !FMP_KEY)) {
+  console.error('❌ Missing env vars: SUPABASE_URL, SUPABASE_SERVICE_KEY, and at least one market data key: ALPHA_VANTAGE_KEY or FMP_KEY');
   process.exit(1);
 }
 
@@ -65,8 +66,8 @@ for (let i = 0; i < etfs.length; i++) {
   console.log(`\n[${i + 1}/${etfs.length}] ${meta.ticker}`);
 
   try {
-    const quote = await fetchQuote(meta.ticker, AV_KEY);
-    console.log(`  ✓ $${quote.nav} (${quote.change_percent > 0 ? '+' : ''}${quote.change_percent?.toFixed(2)}%)`);
+    const quote = await fetchQuote(meta.ticker, AV_KEY, FMP_KEY);
+    console.log(`  ✓ $${quote.nav} (${quote.change_percent > 0 ? '+' : ''}${quote.change_percent?.toFixed(2)}%) — ${quote.source}`);
 
     const record = {
       ticker:         meta.ticker,
@@ -95,7 +96,7 @@ for (let i = 0; i < etfs.length; i++) {
 
     if (UPDATE_HIST && !DRY_RUN) {
       await sleep(3000);
-      const hist = await fetchPriceHistory(meta.ticker, AV_KEY);
+      const hist = await fetchPriceHistory(meta.ticker, AV_KEY, FMP_KEY);
       await upsertHistory(hist);
       console.log(`  ✓ ${hist.length} history points saved`);
     }

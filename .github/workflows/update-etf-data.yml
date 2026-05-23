@@ -2,8 +2,8 @@ name: 📊 Update ETF Data
 
 on:
   schedule:
-    - cron: '0 12 * * 1-5'   # 8am ET — before market open
-    - cron: '0 14 * * 1-5'   # 10am ET — after market open
+    - cron: '0 13 * * 1-5'   # 9am ET — before market open
+    - cron: '30 21 * * 1-5'  # 5:30pm ET — after market open
   workflow_dispatch:
     inputs:
       ticker:
