@@ -20,12 +20,12 @@ const year = new Date().getFullYear();
         <h3 class="text-white font-semibold text-sm mb-4">Product</h3>
         <ul class="space-y-2.5">
           {[
-            ['/dashboard', 'Free Dashboard'],
-            ['/pricing',   'Pricing'],
-            ['/premium',   'Premium'],
-            ['/blog',      'Research Blog'],
+            ['dashboard', 'Free Dashboard'],
+            ['pricing',   'Pricing'],
+            ['premium',   'Premium'],
+            ['blog',      'Research Blog'],
           ].map(([href, label]) => (
-            <li><a href={href} class="text-slate-400 hover:text-white text-sm transition-colors">{label}</a></li>
+            <li><a href={`${import.meta.env.BASE_URL}${href}`} class="text-slate-400 hover:text-white text-sm transition-colors">{label}</a></li>
           ))}
         </ul>
       </div>
@@ -34,11 +34,11 @@ const year = new Date().getFullYear();
         <h3 class="text-white font-semibold text-sm mb-4">Tools</h3>
         <ul class="space-y-2.5">
           {[
-            ['/premium/etf-tracker',    'ETF Tracker'],
-            ['/premium/watchlist',      'Watchlist'],
-            ['/premium/sovereign-risk', 'Sovereign Risk'],
+            ['premium/etf-tracker',    'ETF Tracker'],
+            ['premium/watchlist',      'Watchlist'],
+            ['premium/sovereign-risk', 'Sovereign Risk'],
           ].map(([href, label]) => (
-            <li><a href={href} class="text-slate-400 hover:text-white text-sm transition-colors">{label}</a></li>
+            <li><a href={`${import.meta.env.BASE_URL}${href}`} class="text-slate-400 hover:text-white text-sm transition-colors">{label}</a></li>
           ))}
         </ul>
       </div>
@@ -47,11 +47,11 @@ const year = new Date().getFullYear();
         <h3 class="text-white font-semibold text-sm mb-4">Legal</h3>
         <ul class="space-y-2.5">
           {[
-            ['/privacy',    'Privacy Policy'],
-            ['/terms',      'Terms of Use'],
-            ['/disclaimer', 'Disclaimer'],
+            ['privacy',    'Privacy Policy'],
+            ['terms',      'Terms of Use'],
+            ['disclaimer', 'Disclaimer'],
           ].map(([href, label]) => (
-            <li><a href={href} class="text-slate-400 hover:text-white text-sm transition-colors">{label}</a></li>
+            <li><a href={`${import.meta.env.BASE_URL}${href}`} class="text-slate-400 hover:text-white text-sm transition-colors">{label}</a></li>
           ))}
         </ul>
       </div>

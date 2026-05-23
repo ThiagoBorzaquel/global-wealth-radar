@@ -7,15 +7,26 @@ import NewsletterForm from '../../components/NewsletterForm.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
-  return posts.map(post => ({ params: { slug: post.slug }, props: { post } }));
+  return posts.map(post => {
+    // In Astro v6 with glob loader, use the 'id' field (filename without .md)
+    const slug = post.id.replace('.md', '').split('/').pop() || post.id;
+    return {
+      params: { slug },
+      props: { post }
+    };
+  });
 }
 
 const { post } = Astro.props;
-const { Content } = await post.render();
+// In Astro v6 with glob loader, the content is already in post.body as rendered HTML
 
 const allPosts = await getCollection('blog');
+const currentSlug = post.id.replace('.md', '').split('/').pop() || post.id;
 const related  = allPosts
-  .filter(p => p.slug !== post.slug && p.data.category === post.data.category)
+  .filter(p => {
+    const pSlug = p.id.replace('.md', '').split('/').pop() || p.id;
+    return pSlug !== currentSlug && p.data.category === post.data.category;
+  })
   .slice(0, 3);
 
 const siteUrl = 'https://globalwealthradar.com';
@@ -104,8 +115,8 @@ const fmtDate = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', mo
         'prose-table:text-sm prose-th:text-slate-300 prose-td:text-slate-400',
         { 'max-h-48 overflow-hidden': post.data.isPremium }
       ]}
+      set:html={post.body}
     >
-      <Content />
     </div>
 
     {post.data.tags.length > 0 && (
@@ -126,8 +137,10 @@ const fmtDate = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', mo
       <section class="mt-16">
         <h3 class="text-slate-400 text-sm font-semibold uppercase tracking-widest mb-6">Related Articles</h3>
         <div class="grid gap-4">
-          {related.map(rp => (
-            <a href={`/blog/${rp.slug}`}
+          {related.map(rp => {
+            const rpSlug = rp.id.replace('.md', '').split('/').pop() || rp.id;
+            return (
+            <a href={`${import.meta.env.BASE_URL}blog/${rpSlug}`}
                class="group flex items-center gap-4 bg-surface-800 border border-slate-800 hover:border-slate-700 rounded-xl p-4 transition-colors">
               <div class="flex-1">
                 <p class="text-xs text-slate-500 mb-1">{rp.data.category}</p>
@@ -135,7 +148,8 @@ const fmtDate = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', mo
               </div>
               <span class="text-slate-600 group-hover:text-brand-500 transition-colors">→</span>
             </a>
-          ))}
+            );
+          })}
         </div>
       </section>
     )}

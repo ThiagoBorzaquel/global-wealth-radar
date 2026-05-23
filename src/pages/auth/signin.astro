@@ -38,16 +38,26 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 <script>
   import { supabase } from '../../lib/supabase.ts';
 
+  const baseUrl = import.meta.env.BASE_URL || '/';
+  const normalizePath = (path: string | null) => {
+    if (!path) return `${baseUrl}dashboard`;
+    if (path.startsWith('http')) return `${baseUrl}dashboard`;
+    if (path.startsWith(baseUrl)) return path;
+    if (path.startsWith('/')) return baseUrl === '/' ? path : baseUrl + path.slice(1);
+    return baseUrl + path;
+  };
+
   document.getElementById('google-signin')?.addEventListener('click', async () => {
     const btn = document.getElementById('google-signin') as HTMLButtonElement;
     btn.textContent = 'Redirecting to Google...';
     btn.disabled = true;
 
-    const next = new URLSearchParams(window.location.search).get('next') || '/dashboard';
+    const nextParam = new URLSearchParams(window.location.search).get('next');
+    const next = normalizePath(nextParam);
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=${next}` },
+      options: { redirectTo: `${window.location.origin}${baseUrl}auth/callback?next=${encodeURIComponent(next)}` },
     });
 
     if (error) {

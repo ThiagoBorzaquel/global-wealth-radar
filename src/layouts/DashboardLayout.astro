@@ -125,7 +125,11 @@ const navItems = [
     }
 
     const titleEl = document.getElementById('page-title');
-    if (titleEl) titleEl.textContent = titles[window.location.pathname] || 'Dashboard';
+    if (titleEl) {
+      const baseUrl = import.meta.env.BASE_URL || '/';
+      const path = window.location.pathname.replace(baseUrl, '/');
+      titleEl.textContent = titles[path] || 'Dashboard';
+    }
   }
 
   initLayout();

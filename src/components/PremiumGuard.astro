@@ -22,7 +22,8 @@
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        window.location.href = '/auth/signin?next=' + encodeURIComponent(window.location.pathname);
+        const baseUrl = import.meta.env.BASE_URL || '/';
+        window.location.href = baseUrl + 'auth/signin?next=' + encodeURIComponent(window.location.pathname);
         return;
       }
 
@@ -33,14 +34,16 @@
         .single();
 
       if (!profile?.is_premium) {
-        window.location.href = '/pricing?reason=premium_required';
+        const baseUrl = import.meta.env.BASE_URL || '/';
+        window.location.href = baseUrl + 'pricing?reason=premium_required';
         return;
       }
 
       loading?.remove();
       content?.classList.remove('hidden');
     } catch {
-      window.location.href = '/auth/signin';
+      const baseUrl = import.meta.env.BASE_URL || '/';
+      window.location.href = baseUrl + 'auth/signin';
     }
   }
 
