@@ -22,6 +22,29 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         Continue with Google
       </button>
 
+      <div class="mt-8 bg-surface-900 border border-slate-800 rounded-2xl p-6 text-left">
+        <h2 class="text-white text-lg font-semibold mb-4">Sign in or create an account</h2>
+
+        <label class="block text-slate-400 text-xs uppercase tracking-widest mb-2">Email</label>
+        <input id="email" type="email" autocomplete="email"
+          class="w-full mb-3 rounded-xl bg-slate-900 border border-slate-800 px-4 py-3 text-white focus:border-brand-500 outline-none"
+          placeholder="you@example.com"
+        />
+
+        <label class="block text-slate-400 text-xs uppercase tracking-widest mb-2">Password</label>
+        <input id="password" type="password" autocomplete="current-password"
+          class="w-full mb-4 rounded-xl bg-slate-900 border border-slate-800 px-4 py-3 text-white focus:border-brand-500 outline-none"
+          placeholder="Create a secure password"
+        />
+
+        <div class="grid gap-3 sm:grid-cols-2">
+          <button id="email-signin" class="w-full bg-brand-500 hover:bg-brand-400 text-white rounded-xl py-3 font-medium transition-colors">Sign in</button>
+          <button id="email-signup" class="w-full bg-slate-700 hover:bg-slate-600 text-white rounded-xl py-3 font-medium transition-colors">Create account</button>
+        </div>
+
+        <p id="auth-message" class="mt-4 text-sm text-slate-400"></p>
+      </div>
+
       <p class="mt-6 text-xs text-slate-500">
         By signing in, you agree to our
         <a href={`${import.meta.env.BASE_URL}terms`} class="text-slate-400 hover:text-white">Terms</a> and
@@ -47,6 +70,58 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     return baseUrl + path;
   };
 
+  function setMessage(message, isError = false) {
+    const msg = document.getElementById('auth-message');
+    if (!msg) return;
+    msg.textContent = message;
+    msg.className = `mt-4 text-sm ${isError ? 'text-red-400' : 'text-brand-400'}`;
+  }
+
+  async function handleEmailSignIn() {
+    const email = (document.getElementById('email') as HTMLInputElement).value;
+    const password = (document.getElementById('password') as HTMLInputElement).value;
+    const btn = document.getElementById('email-signin') as HTMLButtonElement;
+
+    btn.textContent = 'Signing in...';
+    btn.disabled = true;
+    setMessage('');
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      setMessage(error.message, true);
+      btn.textContent = 'Sign in';
+      btn.disabled = false;
+      return;
+    }
+
+    setMessage('Signed in successfully. Redirecting...');
+    window.location.href = normalizePath(new URLSearchParams(window.location.search).get('next'));
+  }
+
+  async function handleEmailSignUp() {
+    const email = (document.getElementById('email') as HTMLInputElement).value;
+    const password = (document.getElementById('password') as HTMLInputElement).value;
+    const btn = document.getElementById('email-signup') as HTMLButtonElement;
+    const next = normalizePath(new URLSearchParams(window.location.search).get('next'));
+
+    btn.textContent = 'Creating account...';
+    btn.disabled = true;
+    setMessage('');
+
+    const { error } = await supabase.auth.signUp({ email, password }, {
+      redirectTo: `${window.location.origin}${baseUrl}auth/callback?next=${encodeURIComponent(next)}`,
+    });
+
+    if (error) {
+      setMessage(error.message, true);
+      btn.textContent = 'Create account';
+      btn.disabled = false;
+      return;
+    }
+
+    setMessage('Account created! Check your email if verification is required.');
+  }
+
   document.getElementById('google-signin')?.addEventListener('click', async () => {
     const btn = document.getElementById('google-signin') as HTMLButtonElement;
     btn.textContent = 'Redirecting to Google...';
@@ -66,4 +141,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       console.error(error);
     }
   });
+
+  document.getElementById('email-signin')?.addEventListener('click', handleEmailSignIn);
+  document.getElementById('email-signup')?.addEventListener('click', handleEmailSignUp);
 </script>
